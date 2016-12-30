@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcArt.Editor", "ProcArt.Editor.csproj", "{A944DC07-98E9-F337-ECBF-E3860899AA19}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A944DC07-98E9-F337-ECBF-E3860899AA19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A944DC07-98E9-F337-ECBF-E3860899AA19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A944DC07-98E9-F337-ECBF-E3860899AA19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A944DC07-98E9-F337-ECBF-E3860899AA19}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
