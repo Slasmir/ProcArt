@@ -6,18 +6,29 @@ using UnityEditor;
 public class PM_ConnectorBase {
 
     public Vector2 location { get { return Location; } }
-    public Vector2 drawLineLocation { get { return Location - (Size / 2f); } }
+    public Vector2 drawLineLocation { get { return Location + (Size / 2f); } }
     Vector2 Location = Vector2.zero;
 
+    public Vector2 size { get { return Size; } }
     Vector2 Size = Vector2.one * 20f;
+
+    public Rect currentRect { get { return new Rect(Location, Size); } }
 
     string InfoText = "This is not written";
     string DisplayText = "inp";
 
+    public bool isInput { get { return IsInput; } }
+    bool IsInput = false;
+
     List<PM_ConnectorBase> Connections = new List<PM_ConnectorBase>();
 
-    Color InputColor = new Color(1, 1, 1);
+    Color InputColor = new Color(.7f, .7f, .7f);
 
+
+    public PM_ConnectorBase (bool _IsInput)
+    {
+        IsInput = _IsInput;
+    }
 
     //Set the text on the hover over node
     void SetInfoText(string newText)
@@ -25,10 +36,16 @@ public class PM_ConnectorBase {
         InfoText = newText;
     }
 
+
     //Set the text displayed on the connector
     void setDisplayText(string newText)
     {
         DisplayText = newText;
+    }
+
+    public void SetLocation(Vector2 NewLocation)
+    {
+        Location = NewLocation;
     }
 
     //Move the node, only called from parent PM_EditorNodeBase
@@ -42,6 +59,7 @@ public class PM_ConnectorBase {
     {
         Rect drawRect = new Rect(Location, Size);
         EditorGUI.DrawRect(drawRect, InputColor);
+        DrawInputLine();
     }
 
     //Connect to antoher Connector
@@ -68,7 +86,7 @@ public class PM_ConnectorBase {
         {
             Handles.BeginGUI();
             Handles.color = Color.red;
-            Vector2 drawLocation = Location - (Size / 2f);
+            Vector2 drawLocation = Location + (Size / 2f);
             Handles.DrawLine(drawLocation, Connection.drawLineLocation);
         }
     }
@@ -78,7 +96,7 @@ public class PM_ConnectorBase {
     {
         Handles.BeginGUI();
         Handles.color = Color.red;
-        Vector2 drawLocation = Location - (Size / 2f);
+        Vector2 drawLocation = Location + (Size / 2f);
         Handles.DrawLine(drawLocation, MouseLocation);
     }
 }

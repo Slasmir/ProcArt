@@ -6,7 +6,9 @@ using System.Collections.Generic;
 public class PM_Window : EditorWindow{
 
     List<PM_EditorNodeBase> Nodes = new List<PM_EditorNodeBase>();
+    List<PM_ConnectorBase> Connections = new List<PM_ConnectorBase>();
     PM_EditorNodeBase SelectedNode = null;
+    PM_ConnectorBase SelectedConnection = null;
 
     Vector2 MousePos = Vector2.zero;
     Vector2 DeltaMousePos = Vector2.zero;
@@ -22,9 +24,6 @@ public class PM_Window : EditorWindow{
 
     private void Update()
     {
-        if (Input.GetMouseButton(0))
-            Debug.Log("sssss");
-
         Repaint();
     }
 
@@ -42,6 +41,8 @@ public class PM_Window : EditorWindow{
         RightClickHandle(currentEvent);
         MiddleClickHandle(currentEvent);
         MiddleHoldHandle(currentEvent);
+
+        HandleKeyInputs(currentEvent);
 
         //Draw
         DrawNodes();
@@ -73,6 +74,11 @@ public class PM_Window : EditorWindow{
             if (IsLeftMouseDown)
             {
                 IsLeftMouseDown = false;
+                if(SelectedConnection != null)
+                {
+                    TryToConnectConnections(currentEvent);
+                }
+                SelectedConnection = null;
             }
         }
     }
@@ -84,6 +90,9 @@ public class PM_Window : EditorWindow{
 
         if(SelectedNode != null)
             MoveNode(SelectedNode);
+
+        if (SelectedConnection != null)
+            SelectedConnection.DrawActiveInputLine(currentEvent.mousePosition);
     }
 
     //Right CLick Event 
@@ -104,6 +113,7 @@ public class PM_Window : EditorWindow{
             {
                 GenericMenu menu = new GenericMenu();
                 menu.AddItem(new GUIContent("Add Default Node"), false, AddNewNode, currentEvent.mousePosition);
+                menu.AddItem(new GUIContent("Add"), false, AddNode_Add, currentEvent.mousePosition);
                 menu.AddSeparator("");
                 menu.ShowAsContext();
                 currentEvent.Use();
@@ -111,6 +121,7 @@ public class PM_Window : EditorWindow{
         }
     }
 
+    //Handles middle mouse click 
     void MiddleClickHandle(Event currentEvent)
     {
         if (currentEvent.type == EventType.MouseDown && currentEvent.button == 2)
@@ -130,10 +141,35 @@ public class PM_Window : EditorWindow{
         }
     }
 
+    //Handles the mindle mouse hold events
     void MiddleHoldHandle(Event currentEvent)
     {
         if (!IsMiddleMouseDown) return;
         MoveAllNodes();
+    }
+
+    //Handles all key input events
+    void HandleKeyInputs(Event currentEvent)
+    {
+        if (currentEvent.type == EventType.KeyDown && currentEvent.keyCode == (KeyCode.Delete))
+        {
+            DeleteSelectedNode();
+        }
+    }
+
+    //Adds a connector to the list keeping track of all connectors
+    public void AddConnectorToList(PM_ConnectorBase connector)
+    {
+        Connections.Add(connector);
+    }
+
+    //Removes a connector from the list of connectors, should only be used if the parent node is deleted. 
+    public void RemoveConnectorFromList(PM_ConnectorBase connector)
+    {
+        if (Connections.Contains(connector))
+        {
+            Connections.Remove(connector);
+        }
     }
 
     //returns a node if the mouse is hovering it. 
@@ -152,10 +188,48 @@ public class PM_Window : EditorWindow{
         return SelectedNode;
     }
 
+    //returns a connection if the mouse is hovering it
+    PM_ConnectorBase MouseOverConnection(Event currentEvent)
+    {
+        Vector2 mousePos = currentEvent.mousePosition;
+        PM_ConnectorBase selectedConnection = null;
+        foreach (PM_ConnectorBase connection in Connections)
+        {
+            if (connection.currentRect.Contains(mousePos))
+            {
+                selectedConnection = connection;
+                break;
+            }
+        }
+
+        return selectedConnection;
+    }
+
+    void TryToConnectConnections(Event currentEvent)
+    {
+        PM_ConnectorBase ConnectionTwo = MouseOverConnection(currentEvent);
+        if (SelectedConnection == null) return;
+        if (ConnectionTwo == null) return;
+        if (ConnectionTwo.isInput == SelectedConnection.isInput) return;
+        if (SelectedConnection.isInput == true)
+        {
+            SelectedConnection.Connect(ConnectionTwo);
+        } else
+        {
+            ConnectionTwo.Connect(SelectedConnection);
+        }
+    }
+
     //Selects the node corelating to mouse position
     void SelectMouseoverNode(Event currentEvent)
     {
-        SelectNode(MouseOverNode(currentEvent));
+        PM_EditorNodeBase node = MouseOverNode(currentEvent);
+        if (node == null)
+        {
+            SelectedConnection = MouseOverConnection(currentEvent);
+        }
+        SelectNode(node);
+        
     }
 
     //Selects node
@@ -178,6 +252,19 @@ public class PM_Window : EditorWindow{
         {
             SelectedNode.SelectNode();
         }
+    }
+
+    void DeleteSelectedNode()
+    {
+        if (SelectedNode == null) return;
+        DeleteNode(SelectedNode);
+    }
+
+    void DeleteNode(PM_EditorNodeBase node)
+    {
+        if (node == null) return;
+        if (Nodes.Contains(node)) Nodes.Remove(node);
+        node.DeleteNode();
     }
 
     //Deselect node
@@ -217,13 +304,20 @@ public class PM_Window : EditorWindow{
         node.MoveNode(DeltaMousePos);
     }
 
+    #region Add Nodes Hack
     //Creates a new node and adds it to the list
     void AddNewNode(object Location)
     {
         Vector2 CursorLocation = (Vector2)Location;
-        Nodes.Add(new PM_EditorNodeBase(CursorLocation));
+        Nodes.Add(new PM_EditorNodeBase(CursorLocation, this));
     }
 
+    void AddNode_Add(object Location)
+    {
+        Vector2 CursorLocation = (Vector2)Location;
+        Nodes.Add(new PM_Node_Add(CursorLocation, this));
+    }
+    #endregion
 
     //Makes sure NULL Nodes are removed from the existing node list. 
     void CleanupNodes()
