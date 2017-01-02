@@ -116,6 +116,7 @@
   <ItemGroup>
     <Compile Include="Assets\Editor\ProceduralMesh\NodeEditor\Connectors\PM_Connector_Float.cs" />
     <Compile Include="Assets\Editor\ProceduralMesh\NodeEditor\Nodes\PM_Node_Add.cs" />
+    <Compile Include="Assets\Editor\ProceduralMesh\NodeEditor\Nodes\PM_Node_Output.cs" />
     <Compile Include="Assets\Editor\ProceduralMesh\NodeEditor\PM_ConnectorBase.cs" />
     <Compile Include="Assets\Editor\ProceduralMesh\NodeEditor\PM_ConnectorPlacement.cs" />
     <Compile Include="Assets\Editor\ProceduralMesh\NodeEditor\PM_EditorNodeBase.cs" />

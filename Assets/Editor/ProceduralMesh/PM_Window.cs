@@ -114,6 +114,7 @@ public class PM_Window : EditorWindow{
                 GenericMenu menu = new GenericMenu();
                 menu.AddItem(new GUIContent("Add Default Node"), false, AddNewNode, currentEvent.mousePosition);
                 menu.AddItem(new GUIContent("Add"), false, AddNode_Add, currentEvent.mousePosition);
+                menu.AddItem(new GUIContent("Output"), false, AddNode_Outup, currentEvent.mousePosition);
                 menu.AddSeparator("");
                 menu.ShowAsContext();
                 currentEvent.Use();
@@ -316,6 +317,12 @@ public class PM_Window : EditorWindow{
     {
         Vector2 CursorLocation = (Vector2)Location;
         Nodes.Add(new PM_Node_Add(CursorLocation, this));
+    }
+
+    void AddNode_Outup(object Location)
+    {
+        Vector2 CursorLocation = (Vector2)Location;
+        Nodes.Add(new PM_Node_Output(CursorLocation, this));
     }
     #endregion
 

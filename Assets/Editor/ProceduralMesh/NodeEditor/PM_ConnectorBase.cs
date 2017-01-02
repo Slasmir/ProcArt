@@ -10,7 +10,7 @@ public class PM_ConnectorBase {
     Vector2 Location = Vector2.zero;
 
     public Vector2 size { get { return Size; } }
-    Vector2 Size = Vector2.one * 20f;
+    Vector2 Size = new Vector2(20f, 15f);
 
     public Rect currentRect { get { return new Rect(Location, Size); } }
 
